@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  * 
  * This source code is available under agreement available at
  * %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -34,7 +34,6 @@ import org.hibernate.mapping.ForeignKey;
 import org.hibernate.mapping.Table;
 import org.talend.mdm.commmon.metadata.ComplexTypeMetadata;
 import org.talend.mdm.commmon.metadata.ContainedComplexTypeMetadata;
-import org.talend.mdm.commmon.metadata.ContainedTypeFieldMetadata;
 import org.talend.mdm.commmon.metadata.FieldMetadata;
 import org.talend.mdm.commmon.metadata.MetadataRepository;
 import org.talend.mdm.commmon.metadata.MetadataUtils;
@@ -52,7 +51,6 @@ import org.talend.mdm.commmon.util.core.CommonUtil;
 import com.amalto.core.storage.HibernateStorageUtils;
 import com.amalto.core.storage.StorageType;
 import com.amalto.core.storage.datasource.RDBMSDataSource;
-import com.amalto.core.storage.datasource.RDBMSDataSource.DataSourceDialect;
 
 import liquibase.Liquibase;
 import liquibase.change.AbstractChange;
