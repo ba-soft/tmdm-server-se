@@ -170,12 +170,6 @@ public class StorageTestCase extends TestCase {
 
     protected static final ComplexTypeMetadata refRegion;
 
-    protected static final ComplexTypeMetadata orgActivity;
-
-    protected static final ComplexTypeMetadata orgPerson;
-
-    protected static final ComplexTypeMetadata orgEntity;
-
     public static final String DATABASE = "H2";
 
     public static final String DATASOURCE_DEFAULT = DATABASE + "-Default";
@@ -255,10 +249,6 @@ public class StorageTestCase extends TestCase {
 
         refPays = repository.getComplexType("RefPays");
         refRegion = repository.getComplexType("RefRegion");
-
-        orgActivity = repository.getComplexType("OrgActivity");
-        orgPerson = repository.getComplexType("OrgPerson");
-        orgEntity = repository.getComplexType("OrgEntity");
 
         systemStorage = new SecuredStorage(new HibernateStorage("MDM", StorageType.SYSTEM), userSecurity);
         systemRepository = buildSystemRepository();
