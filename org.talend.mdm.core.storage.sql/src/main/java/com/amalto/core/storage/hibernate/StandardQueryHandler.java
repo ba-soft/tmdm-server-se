@@ -36,8 +36,8 @@ import java.util.Set;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
 import org.hibernate.NullPrecedence;
@@ -117,6 +117,7 @@ import com.amalto.core.query.user.metadata.GroupSize;
 import com.amalto.core.query.user.metadata.StagingBlockKey;
 import com.amalto.core.query.user.metadata.StagingError;
 import com.amalto.core.query.user.metadata.StagingHasTask;
+import com.amalto.core.query.user.metadata.StagingOldGroup;
 import com.amalto.core.query.user.metadata.StagingSource;
 import com.amalto.core.query.user.metadata.StagingStatus;
 import com.amalto.core.query.user.metadata.TaskId;
@@ -467,6 +468,12 @@ class StandardQueryHandler extends AbstractQueryHandler {
     @Override
     public StorageResults visit(StagingHasTask stagingHasTask) {
         projectionList.add(Projections.property(StorageConstants.METADATA_STAGING_HAS_TASK));
+        return null;
+    }
+
+    @Override
+    public StorageResults visit(StagingOldGroup stagingOldGroup) {
+        projectionList.add(Projections.property(StorageConstants.METADATA_STAGING_OLD_GROUP));
         return null;
     }
 
@@ -1955,6 +1962,11 @@ class StandardQueryHandler extends AbstractQueryHandler {
         @Override
         public FieldCondition visit(StagingHasTask stagingHasTask) {
             return createInternalCondition(StorageConstants.METADATA_STAGING_HAS_TASK);
+        }
+
+        @Override
+        public FieldCondition visit(StagingOldGroup stagingOldGroup) {
+            return createInternalCondition(StorageConstants.METADATA_STAGING_OLD_GROUP);
         }
 
         @Override
