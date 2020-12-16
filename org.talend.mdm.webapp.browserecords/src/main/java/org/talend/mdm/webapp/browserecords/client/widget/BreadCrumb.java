@@ -18,10 +18,14 @@ import org.talend.mdm.webapp.browserecords.client.BrowseRecords;
 import org.talend.mdm.webapp.browserecords.client.model.BreadCrumbModel;
 import org.talend.mdm.webapp.browserecords.client.model.ForeignKeyTabModel;
 import org.talend.mdm.webapp.browserecords.client.model.ItemBean;
+import org.talend.mdm.webapp.browserecords.client.model.ItemNodeModel;
 import org.talend.mdm.webapp.browserecords.client.mvc.BrowseRecordsView;
 import org.talend.mdm.webapp.browserecords.client.widget.ItemsDetailPanel.ItemDetailTabPanelContentHandle;
 import org.talend.mdm.webapp.browserecords.client.widget.treedetail.ForeignKeyRender;
 import org.talend.mdm.webapp.browserecords.client.widget.treedetail.ForeignKeyUtil;
+import org.talend.mdm.webapp.browserecords.client.widget.treedetail.ForeignKeyTreeDetail;
+import org.talend.mdm.webapp.browserecords.client.widget.treedetail.TreeDetailUtil;
+import org.talend.mdm.webapp.browserecords.client.i18n.MessagesFactory;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -29,12 +33,24 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Widget;
+import com.extjs.gxt.ui.client.widget.TabItem;
+import com.extjs.gxt.ui.client.widget.MessageBox;
+import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.MessageBoxEvent;
+import com.extjs.gxt.ui.client.widget.Dialog;
 
 public class BreadCrumb extends Composite {
 
     private BreadCrumbBar pWidget = new BreadCrumbBar();
 
     private ItemsDetailPanel itemsDetailPanel;
+
+    private ItemDetailToolBar toolBar;
+
+    private ItemNodeModel root;
+    
+    private boolean isCachedItem = false;
 
     public static String DEFAULTNAME = "Talend MDM"; //$NON-NLS-1$
 
@@ -99,7 +115,23 @@ public class BreadCrumb extends Composite {
 
                 @Override
                 public void onClick(ClickEvent event) {
-                    displayCachedEntity(concept, label, ids);
+                    if (isCurrentRecordChange()) {
+                        MessageBox msgBox = MessageBox.confirm(MessagesFactory.getMessages().confirm_title(),
+                                org.talend.mdm.webapp.base.client.i18n.BaseMessagesFactory.getMessages().msg_confirm_save_tree_detail(root.getLabel()),
+                                new Listener<MessageBoxEvent>() {
+
+                                    @Override
+                                    public void handleEvent(MessageBoxEvent be) {
+                                        if (Dialog.YES.equals(be.getButtonClicked().getItemId())) {
+                                            toolBar.saveItemAndClose(false);
+                                        }
+                                        displayCachedEntity(concept, label, ids);
+                                    }
+                                });
+                        msgBox.getDialog().setWidth(550);
+                    } else {
+                    	displayCachedEntity(concept, label, ids);
+                    }
                     if (pWidget != null) {
                         HTML clickedHtml = (HTML) event.getSource();
                         pWidget.removeNeedless(clickedHtml);
@@ -116,6 +148,29 @@ public class BreadCrumb extends Composite {
         return h;
     }
 
+    private boolean isCurrentRecordChange() {
+        TabItem tabItem = ItemsMainTabPanel.getInstance().getItemByItemId(BrowseRecordsView.DEFAULT_ITEMVIEW);
+        if (tabItem != null) {
+        	if (!isCachedItem) {
+        		itemsDetailPanel = (ItemsDetailPanel) tabItem.getItemByItemId(BrowseRecordsView.DEFAULT_ITEMVIEW);
+        	}
+            if (itemsDetailPanel != null && itemsDetailPanel.getFirstTabWidget() != null) {
+                Widget widget = itemsDetailPanel.getFirstTabWidget();
+                if (widget instanceof ForeignKeyTreeDetail) {
+                    final ForeignKeyTreeDetail fkTree = (ForeignKeyTreeDetail) widget;
+                    toolBar = fkTree.getToolBar();
+                    root = fkTree.getRootModel();
+                } else {
+                    ItemPanel itemPanel = (ItemPanel) widget;
+                    toolBar = itemPanel.getToolBar();
+                    root = itemPanel.getTree().getRootModel();
+                }
+                return root != null ? TreeDetailUtil.isChangeValue(root) : false;
+            }
+        }
+        return false;
+    }
+
     private void displayCachedEntity(String concept, String label, String ids) {
         HashMap<String, ItemPanel> map = BrowseRecords.getSession().getCurrentCachedEntity();
         String key = concept + (ids == null ? "" : ids) + itemsDetailPanel.isOutMost(); //$NON-NLS-1$
@@ -126,6 +181,7 @@ public class BreadCrumb extends Composite {
                 itemsDetailPanel.clearContent();
                 itemsDetailPanel.clearBanner();
                 ItemBean itemBean = itemPanel.getItem();
+                isCachedItem = true;
                 if (ids != null && ids.trim().length() > 0) { // Saved record
                     itemsDetailPanel.initBanner(itemBean.getPkInfoList(), itemBean.getDescription());
                     itemsDetailPanel.addTabItem(itemBean.getLabel(), itemPanel, ItemsDetailPanel.SINGLETON, itemBean.getIds());
