@@ -1002,14 +1002,14 @@ class StandardQueryHandler extends AbstractQueryHandler {
             if (HibernateStorageUtils.isSQLServer(dataSource.getDialectName())) {
                 criteria.addOrder(Order.asc(field));
             } else {
-                criteria.addOrder(Order.asc(field).nulls(NullPrecedence.FIRST));
+                criteria.addOrder(Order.asc(field));
             }
             break;
         case DESC:
             if (HibernateStorageUtils.isSQLServer(dataSource.getDialectName())) {
                 criteria.addOrder(Order.desc(field));
             } else {
-                criteria.addOrder(Order.desc(field).nulls(NullPrecedence.LAST));
+                criteria.addOrder(Order.desc(field));
             }
             break;
         }
