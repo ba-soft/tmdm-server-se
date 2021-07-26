@@ -9,7 +9,6 @@
  */
 package org.talend.mdm.webapp.browserecords.server.actions;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.io.StringReader;
 import java.net.URLEncoder;
@@ -19,7 +18,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -168,16 +166,15 @@ import com.amalto.webapp.core.util.Util;
 import com.amalto.webapp.core.util.Webapp;
 import com.amalto.webapp.core.util.XmlUtil;
 import com.extjs.gxt.ui.client.Style.SortDir;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.sun.xml.xsom.XSAnnotation;
 import com.sun.xml.xsom.XSComplexType;
 import com.sun.xml.xsom.XSElementDecl;
 import com.sun.xml.xsom.XSParticle;
 import com.sun.xml.xsom.XSSchemaSet;
 import com.sun.xml.xsom.parser.XSOMParser;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * DOC Administrator class global comment. Detailled comment
@@ -362,35 +359,13 @@ public class BrowseRecordsAction implements BrowseRecordsService {
         String navigator_node_ids = "navigator_node_ids"; //$NON-NLS-1$
         String navigator_node_concept = "navigator_node_concept"; //$NON-NLS-1$
         String navigator_node_label = "navigator_node_label"; //$NON-NLS-1$
-
-        ObjectMapper mapper = new ObjectMapper();
-        ArrayNode jsonArray = mapper.createArrayNode();
-        JsonNode arrNode;
-        try {
-            arrNode = mapper.readTree(jsonString.getBytes());
-        } catch (IOException e) {
-            LOG.error(e.getMessage(), e);
-            throw new ServiceException(e.getLocalizedMessage());
-        }
-        if (arrNode.isArray()) {
-            for (final JsonNode objNode : arrNode) {
-                ObjectNode jsonObject = mapper.createObjectNode();
-                for (Iterator<Map.Entry<String, JsonNode>> it = objNode.fields(); it.hasNext();) {
-                    Map.Entry<String, JsonNode> tuple = it.next();
-                    jsonObject.set(tuple.getKey(), tuple.getValue());
-                }
-                String ids = StringUtils.EMPTY;
-                if (objNode.get(navigator_node_ids) != null) {
-                    ids = objNode.get(navigator_node_ids).asText();
-                }
-                String concept = StringUtils.EMPTY;
-                if (objNode.get(navigator_node_concept) != null) {
-                    concept = objNode.get(navigator_node_concept).asText();
-                }
-                ItemBean itemBean = getItemBeanById(concept, ids, language);
-                jsonObject.put(navigator_node_label, itemBean.getDisplayPKInfo());
-                jsonArray.add(jsonObject);
-            }
+        JSONArray jsonArray = JSONArray.fromObject(jsonString);
+        for (Object o : jsonArray) {
+            JSONObject jsonObject = (JSONObject) o;
+            String ids = (String) jsonObject.get(navigator_node_ids);
+            String concept = (String) jsonObject.get(navigator_node_concept);
+            ItemBean itemBean = getItemBeanById(concept, ids, language);
+            jsonObject.put(navigator_node_label, itemBean.getDisplayPKInfo());
         }
         return jsonArray.toString();
     }
