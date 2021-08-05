@@ -33,6 +33,8 @@ import com.amalto.core.util.XtentisException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.DocumentHelper;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.talend.mdm.commmon.metadata.ComplexTypeMetadata;
 import org.talend.mdm.commmon.metadata.MetadataRepository;
 import org.talend.mdm.commmon.util.core.MDMConfiguration;
@@ -171,9 +173,6 @@ import com.sun.xml.xsom.XSElementDecl;
 import com.sun.xml.xsom.XSParticle;
 import com.sun.xml.xsom.XSSchemaSet;
 import com.sun.xml.xsom.parser.XSOMParser;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 /**
  * DOC Administrator class global comment. Detailled comment
@@ -358,7 +357,7 @@ public class BrowseRecordsAction implements BrowseRecordsService {
         String navigator_node_ids = "navigator_node_ids"; //$NON-NLS-1$
         String navigator_node_concept = "navigator_node_concept"; //$NON-NLS-1$
         String navigator_node_label = "navigator_node_label"; //$NON-NLS-1$
-        JSONArray jsonArray = JSONArray.fromObject(jsonString);
+        JSONArray jsonArray = new JSONArray(jsonString);
         for (Object o : jsonArray) {
             JSONObject jsonObject = (JSONObject) o;
             String ids = (String) jsonObject.get(navigator_node_ids);
