@@ -124,9 +124,8 @@
             <artifactId>org.restlet.ext.xml</artifactId>
         </dependency>
         <dependency>
-            <groupId>net.sf.json-lib</groupId>
-            <artifactId>json-lib</artifactId>
-            <classifier>jdk15</classifier>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
         </dependency>
         <!-- MDM dependencies -->
         <dependency>
