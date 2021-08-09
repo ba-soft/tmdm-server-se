@@ -9,7 +9,7 @@
  */
 package com.amalto.core.server.routing;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -18,11 +18,13 @@ import java.util.List;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.GenericXmlApplicationContext;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.metrics.StartupStep;
 import org.springframework.mock.env.MockEnvironment;
 
 import com.amalto.core.delegator.BeanDelegatorContainer;
@@ -56,7 +58,7 @@ public class RoutingEngineTest {
     @BeforeClass
     public static void setup() {
         System.setProperty("mdm.root.ignoreIfNotFound", "true");
-        GenericXmlApplicationContext context = new GenericXmlApplicationContext();
+        GenericXmlApplicationContext context = getApplicationContext();
         context.setResourceLoader(new PathMatchingResourcePatternResolver());
         MockEnvironment env = new MockEnvironment();
         env.setProperty("mdm.routing.engine.broker.url", "vm://localhost?broker.persistent=false");
@@ -87,9 +89,47 @@ public class RoutingEngineTest {
                 }));
     }
 
+    private static GenericXmlApplicationContext getApplicationContext() {
+        return new GenericXmlApplicationContext() {
+            @Override
+            public void refresh() throws BeansException, IllegalStateException {
+                synchronized (this) {
+                    StartupStep contextRefresh = this.getApplicationStartup().start("spring.context.refresh");
+                    prepareRefresh();
+                    ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
+                    prepareBeanFactory(beanFactory);
+
+                    try {
+                        postProcessBeanFactory(beanFactory);
+                        StartupStep beanPostProcess = this.getApplicationStartup().start("spring.context.beans.post-process");
+                        invokeBeanFactoryPostProcessors(beanFactory);
+                        registerBeanPostProcessors(beanFactory);
+                        beanPostProcess.end();
+                        initMessageSource();
+                        initApplicationEventMulticaster();
+                        onRefresh();
+                        registerListeners();
+                        finishBeanFactoryInitialization(beanFactory);
+                        finishRefresh();
+                    }
+                    catch (BeansException ex) {
+                        if (logger.isWarnEnabled()) {
+                            logger.warn("Exception encountered during context initialization - " +
+                                    "cancelling refresh attempt: " + ex);
+                        }
+                    }
+                    finally {
+                        resetCommonCaches();
+                        contextRefresh.end();
+                    }
+                }
+            }
+        };
+    }
+
     @AfterClass
     public static void tearDown() {
-        context.destroy();
+        context.close();
         System.setProperty("mdm.root.ignoreIfNotFound", "false");
     }
 
