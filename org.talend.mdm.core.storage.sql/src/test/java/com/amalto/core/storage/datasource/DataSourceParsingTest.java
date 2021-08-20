@@ -13,9 +13,15 @@ package com.amalto.core.storage.datasource;
 import java.io.InputStream;
 import java.util.Map;
 
+import org.talend.mdm.commmon.util.core.AESEncryption;
+
 import junit.framework.TestCase;
 
 public class DataSourceParsingTest extends TestCase {
+
+	public void setUp() {
+		System.setProperty(AESEncryption.KEYS_FILE, DataSourceParsingTest.class.getResource("aeskey.dat").getFile());
+	}
 
     public void testInvalidParameters() {
         try {

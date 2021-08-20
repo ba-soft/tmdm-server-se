@@ -26,19 +26,19 @@ public class MDMConfigurationTest extends TestCase {
         Object[] args = { true, true };
 
         String filePath = getClass().getResource("mdm1.conf").getFile();
+        System.setProperty("encryption.keys.file", filePath);
         MDMConfiguration configuration = MDMConfiguration.createConfiguration(filePath, true);
         Method method = configuration.getClass().getDeclaredMethod("getProperties", new Class[] { boolean.class, boolean.class });
         method.setAccessible(true);
-        Properties properties = (Properties) method.invoke(configuration, args);
+        Properties properties = (Properties) method.invoke(configuration, args);     
         assertEquals("talend", properties.getProperty("admin.password"));
         assertEquals("install", properties.getProperty("technical.password"));
 
         Properties propertiesInFile = new Properties();
         FileInputStream in = new FileInputStream(filePath);
         propertiesInFile.load(in);
-        assertEquals("aYfBEdcXYP3t9pofaispXA==,Encrypt", propertiesInFile.getProperty("admin.password"));
-        assertEquals("tKyTop7U6czAJKGTd9yWRA==,Encrypt", propertiesInFile.getProperty("technical.password"));
-
+        assertEquals("4S5Jn1hvYKwNYEdokE2fbSqOg5cpodDda0vAEamlJf2Dnw==", propertiesInFile.getProperty("admin.password"));
+        assertEquals("dQmd66T0OOVFGqeK4ji7CZBh4hYwBWOTY9aGA+4bd7u7/BE=", propertiesInFile.getProperty("technical.password"));
 
         Field field = configuration.getClass().getDeclaredField("instance");
         field.setAccessible(true);
