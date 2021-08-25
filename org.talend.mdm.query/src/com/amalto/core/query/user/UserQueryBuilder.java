@@ -23,7 +23,9 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.talend.mdm.commmon.metadata.ComplexTypeMetadata;
 import org.talend.mdm.commmon.metadata.ComplexTypeMetadataImpl;
 import org.talend.mdm.commmon.metadata.ContainedComplexTypeMetadata;
@@ -50,7 +52,7 @@ public class UserQueryBuilder {
     
     public static final String ALL_FIELD = "../*";  //$NON-NLS-1$
 
-    private static final Logger LOGGER = Logger.getLogger(UserQueryBuilder.class);
+    private static final Logger LOGGER = LogManager.getLogger(UserQueryBuilder.class);
 
     private final Expression expression;
 

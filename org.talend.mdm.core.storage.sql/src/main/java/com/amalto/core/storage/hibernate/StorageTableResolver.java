@@ -23,7 +23,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.talend.mdm.commmon.metadata.ComplexTypeMetadata;
 import org.talend.mdm.commmon.metadata.ContainedTypeFieldMetadata;
 import org.talend.mdm.commmon.metadata.FieldMetadata;
@@ -36,7 +37,7 @@ class StorageTableResolver implements TableResolver {
 
     private static final String RESERVED_SQL_KEYWORDS = "reservedSQLKeywords.txt"; //$NON-NLS-1$
 
-    private static final Logger LOGGER = Logger.getLogger(StorageTableResolver.class);
+    private static final Logger LOGGER = LogManager.getLogger(StorageTableResolver.class);
 
     private static final String STANDARD_PREFIX = "X_"; //$NON-NLS-1$
 
