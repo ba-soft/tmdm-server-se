@@ -13,10 +13,12 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.h2.engine.Database;
 import org.h2.engine.Session;
 import org.h2.jdbc.JdbcConnection;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.talend.mdm.commmon.metadata.MetadataRepository;
 
 import com.amalto.core.query.user.Expression;
@@ -28,7 +30,7 @@ import com.amalto.core.storage.hibernate.HibernateStorage;
 
 public class MemoryStorage extends HibernateStorage {
 
-    protected static final Logger LOGGER = Logger.getLogger(MemoryStorage.class);
+    protected static final Logger LOGGER = LogManager.getLogger(MemoryStorage.class);
 
     public MemoryStorage(String storageName, StorageType type) {
         super(storageName, type);

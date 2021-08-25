@@ -11,17 +11,17 @@
 
 package com.amalto.core.storage.task;
 
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.springframework.security.core.context.SecurityContext;
+
 import com.amalto.core.query.user.Condition;
 import com.amalto.core.query.user.Expression;
 import com.amalto.core.query.user.UserQueryHelper;
 import com.amalto.core.storage.Storage;
 import com.amalto.core.storage.StorageResults;
 import com.amalto.core.storage.record.DataRecord;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  *
