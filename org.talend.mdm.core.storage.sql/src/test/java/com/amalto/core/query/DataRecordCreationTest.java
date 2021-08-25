@@ -29,7 +29,8 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.talend.mdm.commmon.metadata.ComplexTypeMetadata;
 import org.talend.mdm.commmon.metadata.MetadataRepository;
 import org.talend.mdm.commmon.util.core.MDMXMLUtils;
@@ -63,7 +64,7 @@ import com.amalto.xmlserver.interfaces.XmlServerException;
 @SuppressWarnings("nls")
 public class DataRecordCreationTest extends StorageTestCase {
 
-    private static final Logger LOGGER = Logger.getLogger(DataRecordCreationTest.class);
+    private static final Logger LOGGER = LogManager.getLogger(DataRecordCreationTest.class);
 
     @Override
     public void tearDown() throws Exception {

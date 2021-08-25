@@ -24,17 +24,18 @@ import javax.security.auth.login.FailedLoginException;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 
-import org.apache.log4j.Logger;
-import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.talend.mdm.commmon.util.core.ICoreConstants;
 import org.talend.mdm.commmon.util.core.MDMConfiguration;
+import org.talend.mdm.commmon.util.core.MDMMd5Crypt;
 
 import com.amalto.core.server.security.MDMPrincipal;
 import com.amalto.core.util.LocalUser;
 
 public abstract class AbstractLoginModule implements LoginModule {
 
-    private static final Logger LOGGER = Logger.getLogger(AbstractLoginModule.class);
+    private static final Logger LOGGER = LogManager.getLogger(AbstractLoginModule.class);
 
     public static final String AUTH_LOGIN_NAME = "javax.security.auth.login.name"; //$NON-NLS-1$
 
@@ -51,8 +52,6 @@ public abstract class AbstractLoginModule implements LoginModule {
     protected String username;
 
     protected String password;
-
-    protected Md5PasswordEncoder md5PasswordEncoder;
 
     // options
     private boolean useFirstPass;
@@ -96,8 +95,6 @@ public abstract class AbstractLoginModule implements LoginModule {
         option = (String) options.get(OPTION_ADMIN_MD5_PASSWORD);
         adminMD5Password = Boolean.valueOf(option);
 
-        md5PasswordEncoder = new Md5PasswordEncoder();
-
         try {
             doInitialization(options);
         } catch (Exception e) {
@@ -120,7 +117,7 @@ public abstract class AbstractLoginModule implements LoginModule {
                 if (LocalUser.isAdminUser(username)) {
                     String adminPassword = MDMConfiguration.getAdminPassword();
                     if (adminMD5Password) {
-                        if (!md5PasswordEncoder.isPasswordValid(adminPassword, password, null)) {
+                        if (!MDMMd5Crypt.isPasswordValid(adminPassword, password, null)) {
                             throw new FailedLoginException("Invalid password"); //$NON-NLS-1$;
                         }
                     } else {
