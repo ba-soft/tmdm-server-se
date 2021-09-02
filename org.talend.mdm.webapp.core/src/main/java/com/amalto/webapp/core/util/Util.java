@@ -492,59 +492,6 @@ public abstract class Util {
     }
 
     /**
-     * Computes an md5 hash of a string.
-     *
-     * @param text the hashed string
-     * @return the string hash
-     * @exception NullPointerException if text is null
-     */
-    public static byte[] md5(String text, String charset) {
-        // arguments check
-        if (text == null) {
-            throw new NullPointerException("null text"); //$NON-NLS-1$
-        }
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5"); //$NON-NLS-1$
-            md.update(text.getBytes(charset));
-            return md.digest();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Cannot find MD5 algorithm"); //$NON-NLS-1$
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("No such encoding: " + charset); //$NON-NLS-1$
-        }
-    }
-
-    /**
-     * Computes an md5 hash and returns the result as a string in hexadecimal format.
-     *
-     * @param text the hashed string
-     * @return the string hash
-     * @exception NullPointerException if text is null
-     */
-    public static String md5AsHexString(String text, String charset) {
-        return toHexString(md5(text, charset));
-    }
-
-    /**
-     * Returns a string in the hexadecimal format.
-     *
-     * @param bytes the converted bytes
-     * @return the hexadecimal string representing the bytes data
-     * @throws IllegalArgumentException if the byte array is null
-     */
-    public static String toHexString(byte[] bytes) {
-        if (bytes == null) {
-            throw new IllegalArgumentException("byte array must not be null"); //$NON-NLS-1$
-        }
-        StringBuilder hex = new StringBuilder(bytes.length * 2);
-        for (byte aByte : bytes) {
-            hex.append(Character.forDigit((aByte & 0XF0) >> 4, 16));
-            hex.append(Character.forDigit((aByte & 0X0F), 16));
-        }
-        return hex.toString();
-    }
-
-    /**
      * store the info of datacluster and datamodel to PROVISIONING.
      */
     public static void storeProvisioning(String username, String xmlString) throws Exception {
