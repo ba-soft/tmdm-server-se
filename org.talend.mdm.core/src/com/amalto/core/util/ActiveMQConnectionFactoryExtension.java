@@ -10,14 +10,13 @@
 package com.amalto.core.util;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.talend.mdm.commmon.util.core.AESEncryption;
 
 public class ActiveMQConnectionFactoryExtension extends ActiveMQConnectionFactory {
 
     @Override
     public void setPassword(String password) {
         try {
-			this.password = AESEncryption.getInstance().decrypt(this.userName, password);
+			this.password = password;
         } catch (Exception e) {
             throw new RuntimeException("Can not read activemq password: " + e, e); //$NON-NLS-1$
         }
