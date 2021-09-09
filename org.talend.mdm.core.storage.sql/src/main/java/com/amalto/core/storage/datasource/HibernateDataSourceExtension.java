@@ -98,7 +98,7 @@ public class HibernateDataSourceExtension implements DataSourceExtension {
             String initPassword = (String) evaluate(dataSource,
                     "rdbms-configuration/init/connection-password", XPathConstants.STRING); //$NON-NLS-1$
             String databaseName = (String) evaluate(dataSource, "rdbms-configuration/init/database-name", XPathConstants.STRING); //$NON-NLS-1$
-			AESEncryption encryption = AESEncryption.getInstance();
+            // AESEncryption encryption = AESEncryption.getInstance();
             return new RDBMSDataSource(name, dialectName, driverClassName, userName,  password, connectionPoolMinSize,
                     connectionPoolMaxSize, indexDirectory, cacheDirectory, caseSensitiveSearch, schemaGeneration,
                     generateTechnicalFK, advancedProperties, connectionURL, databaseName, containsOptimization, initPassword,
