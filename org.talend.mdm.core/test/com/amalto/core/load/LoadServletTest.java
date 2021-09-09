@@ -12,6 +12,7 @@
 package com.amalto.core.load;
 
 import org.apache.commons.lang.StringUtils;
+import org.talend.mdm.commmon.util.core.AESEncryption;
 import org.talend.mdm.commmon.util.core.MDMConfiguration;
 
 import com.amalto.core.load.action.DefaultLoadAction;
@@ -30,6 +31,7 @@ public class LoadServletTest extends TestCase {
     public static final String TEST_DATA_CLUSTER = "TestDataCluster";
 
     static {
+        System.setProperty(AESEncryption.KEYS_FILE, "mockfile");
         MDMConfiguration.createConfiguration(LoadServletTest.class.getResource("/org/talend/mdm/commmon/util/core/mdm.conf").getFile(), false);
     }
 

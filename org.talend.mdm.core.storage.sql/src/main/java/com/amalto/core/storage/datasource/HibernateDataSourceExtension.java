@@ -99,9 +99,9 @@ public class HibernateDataSourceExtension implements DataSourceExtension {
                     "rdbms-configuration/init/connection-password", XPathConstants.STRING); //$NON-NLS-1$
             String databaseName = (String) evaluate(dataSource, "rdbms-configuration/init/database-name", XPathConstants.STRING); //$NON-NLS-1$
 			AESEncryption encryption = AESEncryption.getInstance();
-            return new RDBMSDataSource(name, dialectName, driverClassName, userName, encryption.decrypt("connection-password", password), connectionPoolMinSize,
+            return new RDBMSDataSource(name, dialectName, driverClassName, userName,  password, connectionPoolMinSize,
                     connectionPoolMaxSize, indexDirectory, cacheDirectory, caseSensitiveSearch, schemaGeneration,
-                    generateTechnicalFK, advancedProperties, connectionURL, databaseName, containsOptimization, encryption.decrypt("connection-init-password", initPassword),
+                    generateTechnicalFK, advancedProperties, connectionURL, databaseName, containsOptimization, initPassword,
                     initUserName, initConnectionURL, true);
         } catch (XPathExpressionException e) {
             throw new RuntimeException("Unable to parse datasource configuration.", e);
