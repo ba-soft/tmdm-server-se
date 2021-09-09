@@ -26,6 +26,7 @@ import org.springframework.context.support.GenericXmlApplicationContext;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.metrics.StartupStep;
 import org.springframework.mock.env.MockEnvironment;
+import org.talend.mdm.commmon.util.core.AESEncryption;
 
 import com.amalto.core.delegator.BeanDelegatorContainer;
 import com.amalto.core.delegator.ILocalUser;
@@ -58,6 +59,7 @@ public class RoutingEngineTest {
     @BeforeClass
     public static void setup() {
         System.setProperty("mdm.root.ignoreIfNotFound", "true");
+        System.setProperty(AESEncryption.KEYS_FILE, "mockfile");
         GenericXmlApplicationContext context = getApplicationContext();
         context.setResourceLoader(new PathMatchingResourcePatternResolver());
         MockEnvironment env = new MockEnvironment();
