@@ -11,7 +11,6 @@ package com.amalto.core.storage.datasource;
 
 import com.amalto.core.server.api.DataSourceExtension;
 
-import org.talend.mdm.commmon.util.core.AESEncryption;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import javax.xml.namespace.QName;
