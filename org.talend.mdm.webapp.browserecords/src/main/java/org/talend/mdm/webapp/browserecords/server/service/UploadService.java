@@ -403,7 +403,7 @@ public class UploadService {
                 Iterator<Cell> headerIterator = headerRow.cellIterator();
                 while (headerIterator.hasNext()) {
                     Cell cell = headerIterator.next();
-                    if (cell.getCellTypeEnum() == CellType.STRING) {
+                    if (cell.getCellType() == CellType.STRING) {
                         header = cell.getRichStringCellValue().getString();
                         headers.add(handleHeader(header, index));
                     }
@@ -670,7 +670,7 @@ public class UploadService {
 
     protected String getExcelFieldValue(Cell cell) throws Exception {
         String fieldValue = null;
-        CellType cellType = cell.getCellTypeEnum();
+        CellType cellType = cell.getCellType();
         switch (cellType) {
             case NUMERIC: {
                 double tmp = cell.getNumericCellValue();
