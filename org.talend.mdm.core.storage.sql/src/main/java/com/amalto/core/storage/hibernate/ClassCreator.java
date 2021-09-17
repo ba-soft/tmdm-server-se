@@ -276,7 +276,7 @@ class ClassCreator extends DefaultMetadataVisitor<Void> {
                 toStringBody.append(";\n}"); //$NON-NLS-1$
                 newIdClass.addMethod(CtNewMethod.make(toStringBody.toString(), newIdClass));
 
-                Class<? extends Wrapper> compiledNewClassId = classCreationStack.pop().toClass();
+                Class<? extends Wrapper> compiledNewClassId = (Class<? extends Wrapper>) classCreationStack.pop().toClass();
                 storageClassLoader.register(idClassName, compiledNewClassId);
             } else {
                 // Mark new class as indexed for Hibernate search (full text) extensions.
@@ -415,7 +415,7 @@ class ClassCreator extends DefaultMetadataVisitor<Void> {
             CtMethod equalsMethod = CtNewMethod.make(equalsMethodBody.toString(), newClass);
             newClass.addMethod(equalsMethod);
             // Compile class
-            Class<? extends Wrapper> compiledNewClass = classCreationStack.pop().toClass();
+            Class<? extends Wrapper> compiledNewClass =(Class<? extends Wrapper>) classCreationStack.pop().toClass();
             storageClassLoader.register(complexType, compiledNewClass);
         } catch (Exception e) {
             throw new RuntimeException("Error during processing of type '" + typeName + "'", e);
