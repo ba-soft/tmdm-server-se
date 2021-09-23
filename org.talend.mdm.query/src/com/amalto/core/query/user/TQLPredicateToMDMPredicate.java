@@ -34,7 +34,6 @@ import org.talend.tql.model.FieldContainsExpression;
 import org.talend.tql.model.FieldInExpression;
 import org.talend.tql.model.FieldIsEmptyExpression;
 import org.talend.tql.model.FieldIsInvalidExpression;
-import org.talend.tql.model.FieldIsNullExpression;
 import org.talend.tql.model.FieldIsValidExpression;
 import org.talend.tql.model.FieldMatchesRegex;
 import org.talend.tql.model.FieldReference;
@@ -248,10 +247,5 @@ public class TQLPredicateToMDMPredicate implements IASTVisitor<Condition> {
     @Override
     public Condition visit(AllFields allFields) {
         throw new UnsupportedOperationException("AllFields not supported by MDM.");
-    }
-
-    @Override
-    public Condition visit(FieldIsNullExpression elt) {
-        throw new UnsupportedOperationException("FieldIsNullExpression not supported by MDM.");
     }
 }
