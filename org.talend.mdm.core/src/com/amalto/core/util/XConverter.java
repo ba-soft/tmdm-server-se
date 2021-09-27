@@ -682,7 +682,12 @@ public class XConverter {
         WSTransformerV2 ws = new WSTransformerV2();
         ws.setName(transformerPOJO.getName());
         ws.setDescription(transformerPOJO.getDescription());
-        ws.setWithAdminPermissions(transformerPOJO.isWithAdminPermissions());
+        try {
+            ws.setWithAdminPermissions(transformerPOJO.isWithAdminPermissions());
+        } catch (Exception e) {
+            LogManager.getLogger(XConverter.class).debug("WithAdminPermission should be supproted by both Studio and MDM server.",
+                    e);
+        }     
         ArrayList<WSTransformerProcessStep> wsSteps = new ArrayList<WSTransformerProcessStep>();
         ArrayList<TransformerProcessStep> processSteps = transformerPOJO.getProcessSteps();
         if (processSteps != null) {
@@ -698,7 +703,12 @@ public class XConverter {
         TransformerV2POJO pojo = new TransformerV2POJO();
         pojo.setName(wsTransformerV2.getName());
         pojo.setDescription(wsTransformerV2.getDescription());
-        pojo.setWithAdminPermissions(wsTransformerV2.isWithAdminPermissions());
+        try {
+            pojo.setWithAdminPermissions(wsTransformerV2.isWithAdminPermissions());
+        } catch (Exception e) {
+            LogManager.getLogger(XConverter.class).debug("WithAdminPermission should be supproted by both Studio and MDM server.",
+                    e);
+        }       
         ArrayList<TransformerProcessStep> steps = new ArrayList<TransformerProcessStep>();
         WSTransformerProcessStep[] wsSteps = wsTransformerV2.getProcessSteps();
         if (wsSteps != null) {
