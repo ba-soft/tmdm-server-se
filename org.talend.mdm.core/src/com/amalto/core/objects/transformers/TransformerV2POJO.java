@@ -42,6 +42,14 @@ public class TransformerV2POJO extends ObjectPOJO{
 		this.processSteps = processSteps;
 	}
 
+    public TransformerV2POJO(String name, String description, ArrayList<TransformerProcessStep> processSteps) {
+        super();
+        this.name = name;
+        this.description = description;
+        this.withAdminPermissions = false;
+        this.processSteps = processSteps;
+    }
+
     public TransformerV2POJO(String name, String description, boolean withAdminPermissions,
             ArrayList<TransformerProcessStep> processSteps) {
         super();

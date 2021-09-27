@@ -22,6 +22,14 @@ public class WSTransformerV2 {
     public WSTransformerV2() {
     }
 
+    public WSTransformerV2(java.lang.String name, java.lang.String description,
+            com.amalto.core.webservice.WSTransformerProcessStep[] processSteps) {
+        this.name = name;
+        this.description = description;
+        this.withAdminPermissions = false;
+        this.processSteps = processSteps;
+    }
+
     public WSTransformerV2(java.lang.String name, java.lang.String description, java.lang.Boolean withAdminPermissions,
             com.amalto.core.webservice.WSTransformerProcessStep[] processSteps) {
         this.name = name;
