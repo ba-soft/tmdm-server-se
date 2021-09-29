@@ -4668,7 +4668,7 @@ public class StorageQueryTest extends StorageTestCase {
     }
 
     @SuppressWarnings("rawtypes")
-	public void testSetValueToFKPointToSelfEntity() throws Exception {
+    public void testSetValueToFKPointToSelfEntity() throws Exception {
         DataRecordReader<String> factory = new XmlStringDataRecordReader();
         FieldMetadata fieldID = PointToSelfEntity.getField("Id");
         FieldMetadata fieldFK = PointToSelfEntity.getField("FirstFK");
@@ -4680,63 +4680,63 @@ public class StorageQueryTest extends StorageTestCase {
                                 PointToSelfEntity,
                                 "<PointToSelfEntity xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><Id>id1</Id><Name>name1</Name></PointToSelfEntity>"));
         allRecords
-		        .add(factory
-		                .read(repository,
-		                        PointToSelfEntity,
-		                        "<PointToSelfEntity xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><Id>id2</Id><Name>name2</Name></PointToSelfEntity>"));
-		allRecords
-		        .add(factory
-		                .read(repository,
-		                        PointToSelfEntity,
-		                        "<PointToSelfEntity xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><Id>id3</Id><Name>name3</Name></PointToSelfEntity>"));
-		storage.begin();
+                .add(factory
+                        .read(repository,
+                                PointToSelfEntity,
+                                "<PointToSelfEntity xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><Id>id2</Id><Name>name2</Name></PointToSelfEntity>"));
+        allRecords
+                .add(factory
+                        .read(repository,
+                                PointToSelfEntity,
+                                "<PointToSelfEntity xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><Id>id3</Id><Name>name3</Name></PointToSelfEntity>"));
+        storage.begin();
         storage.update(allRecords);
         storage.commit();
 
         // Update their FK
         allRecords = new LinkedList<DataRecord>();
         allRecords
-		        .add(factory
-		                .read(repository,
-		                        PointToSelfEntity,
-		                        "<PointToSelfEntity xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><Id>id1</Id><Name>name1</Name><FirstFK>[id1]</FirstFK></PointToSelfEntity>"));
+                .add(factory
+                        .read(repository,
+                                PointToSelfEntity,
+                                "<PointToSelfEntity xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><Id>id1</Id><Name>name1</Name><FirstFK>[id1]</FirstFK></PointToSelfEntity>"));
         allRecords
-		        .add(factory
-		                .read(repository,
-		                        PointToSelfEntity,
-		                        "<PointToSelfEntity xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><Id>id2</Id><Name>name2</Name><FirstFK>[id3]</FirstFK></PointToSelfEntity>"));
-		allRecords
-		        .add(factory
-		                .read(repository,
-		                        PointToSelfEntity,
-		                        "<PointToSelfEntity xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><Id>id3</Id><Name>name3</Name><FirstFK>[id2]</FirstFK></PointToSelfEntity>"));
-		storage.begin();
+                .add(factory
+                        .read(repository,
+                                PointToSelfEntity,
+                                "<PointToSelfEntity xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><Id>id2</Id><Name>name2</Name><FirstFK>[id3]</FirstFK></PointToSelfEntity>"));
+        allRecords
+                .add(factory
+                        .read(repository,
+                                PointToSelfEntity,
+                                "<PointToSelfEntity xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><Id>id3</Id><Name>name3</Name><FirstFK>[id2]</FirstFK></PointToSelfEntity>"));
+        storage.begin();
         storage.update(allRecords);
         storage.commit();
         
         storage.begin();
         UserQueryBuilder qb = from(PointToSelfEntity);
         StorageResults records = storage.fetch(qb.getSelect());
-		try {
-			assertEquals(3, records.getCount());
-			boolean valid1 = false;
-		    boolean valid2 = false;
-		    boolean valid3 = false;
-			for (DataRecord result : records) {
-				String id = (String)result.get(fieldID);
-				DataRecord recordFK = (DataRecord) ((List) result.get(fieldFK)).get(0);
-				if ("id1".equals(id)) {
-					valid1 = "id1".equals(recordFK.get(fieldID));
-				} else if ("id2".equals(id)) {
-					valid2 = "id3".equals(recordFK.get(fieldID));
-				} else {
-					valid3 = "id2".equals(recordFK.get(fieldID));
-				}
-			}
-			assertTrue(valid1 && valid2 && valid3);
-		} finally {
-			storage.commit();
-		}
+        try {
+            assertEquals(3, records.getCount());
+            boolean valid1 = false;
+            boolean valid2 = false;
+            boolean valid3 = false;
+            for (DataRecord result : records) {
+                String id = (String)result.get(fieldID);
+                DataRecord recordFK = (DataRecord) ((List) result.get(fieldFK)).get(0);
+                if ("id1".equals(id)) {
+                    valid1 = "id1".equals(recordFK.get(fieldID));
+                } else if ("id2".equals(id)) {
+                    valid2 = "id3".equals(recordFK.get(fieldID));
+                } else {
+                    valid3 = "id2".equals(recordFK.get(fieldID));
+                }
+            }
+            assertTrue(valid1 && valid2 && valid3);
+        } finally {
+            storage.commit();
+        }
     }
 
     public void testRepeatableElementsCount() throws Exception {
@@ -6042,6 +6042,53 @@ public class StorageQueryTest extends StorageTestCase {
             assertEquals(2, results.getCount());
         } finally {
             results.close();
+        }
+    }
+
+    // TMDM-14099 Search complex Foreign Key Field with "is empty or null" throws error
+    public void testQueryFKFieldIsEmptyOrNull() throws Exception {
+        MetadataRepository repository = new MetadataRepository();
+        repository.load(DataRecordCreationTest.class.getResourceAsStream("FLIFExpress.xsd"));
+        Storage storage = new HibernateStorage("H2-DS1", StorageType.MASTER);
+        storage.init(ServerContext.INSTANCE.get().getDefinition("H2-DS1", "MDM"));
+        storage.prepare(repository, true);
+        DataRecordReader<String> factory = new XmlStringDataRecordReader();
+
+        ComplexTypeMetadata refSourceSystem = repository.getComplexType("RefSourceSystem");
+        ComplexTypeMetadata partner = repository.getComplexType("Partner");
+
+        List<DataRecord> records = new LinkedList<DataRecord>();
+        records.add(factory.read(repository, refSourceSystem,
+                "<RefSourceSystem><RefSourceSystemId>11</RefSourceSystemId><Bezeichnung>Source_11</Bezeichnung></RefSourceSystem>"));
+        records.add(factory.read(repository, refSourceSystem,
+                "<RefSourceSystem><RefSourceSystemId>22</RefSourceSystemId><Bezeichnung>Source_22</Bezeichnung></RefSourceSystem>"));
+        records.add(factory.read(repository, partner,
+                "<Partner><PartnerId>201911110451976d11e2</PartnerId><Name>MyName1</Name><SourceSystemMap><SourceSystem><SourceSystemId>[11]</SourceSystemId><SourceKey>key1</SourceKey></SourceSystem></SourceSystemMap></Partner>"));
+        records.add(factory.read(repository, partner,
+                "<Partner><PartnerId>2019111114853265d5e2</PartnerId><Name>good</Name></Partner>"));
+        records.add(factory.read(repository, partner,
+                "<Partner><PartnerId>201911110451976d11e2</PartnerId><Name>MyName1</Name><SourceSystemMap><SourceSystem><SourceSystemId>[11]</SourceSystemId><SourceKey>key1</SourceKey></SourceSystem></SourceSystemMap></Partner>"));
+
+        storage.begin();
+        storage.update(records);
+        storage.commit();
+
+        storage.begin();
+        UserQueryBuilder qb = from(partner).where(isEmpty(partner.getField("SourceSystemMap/SourceSystem/SourceSystemId")));
+        StorageResults results = storage.fetch(qb.getSelect());
+        assertEquals(1, results.getCount());
+        for (DataRecord result : results) {
+            assertEquals("Partner", result.getType().getName());
+            assertEquals("good", result.get("Name"));
+            assertEquals("2019111114853265d5e2", result.get("PartnerId"));
+        }
+        qb = from(partner).where(emptyOrNull(partner.getField("SourceSystemMap/SourceSystem/SourceSystemId")));
+        results = storage.fetch(qb.getSelect());
+        assertEquals(1, results.getCount());
+        for (DataRecord result : results) {
+            assertEquals("Partner", result.getType().getName());
+            assertEquals("good", result.get("Name"));
+            assertEquals("2019111114853265d5e2", result.get("PartnerId"));
         }
     }
 
