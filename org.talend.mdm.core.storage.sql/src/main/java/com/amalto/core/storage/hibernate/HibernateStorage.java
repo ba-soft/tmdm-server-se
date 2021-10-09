@@ -21,6 +21,8 @@ import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -149,6 +151,7 @@ import com.amalto.core.storage.StorageType;
 import com.amalto.core.storage.datasource.DataSource;
 import com.amalto.core.storage.datasource.DataSourceDefinition;
 import com.amalto.core.storage.datasource.RDBMSDataSource;
+import com.amalto.core.storage.datasource.RDBMSDataSource.DataSourceDialect;
 import com.amalto.core.storage.hibernate.mapping.MDMDenormalizedTable;
 import com.amalto.core.storage.hibernate.mapping.MDMTable;
 import com.amalto.core.storage.prepare.FullTextIndexCleaner;
@@ -1268,6 +1271,10 @@ public class HibernateStorage implements Storage {
         try {
             connection = DriverManager.getConnection(dataSource.getConnectionURL(), dataSource.getUserName(),
                     dataSource.getPassword());
+            // clean all constraint foreign key being drop tables
+            if (dataSource.getDialectName() == DataSourceDialect.POSTGRES) {
+                cleanFKForDropTables(tablesToDrop, connection);
+            }
             int successCount = 0;
             while (successCount < totalCount && totalRound++ < totalCount) {
                 Set<String> dropedTables = new HashSet<>();
@@ -1296,6 +1303,40 @@ public class HibernateStorage implements Storage {
                 }
             } catch (SQLException e) {
                 LOGGER.error("Unexpected error on connection close.", e); //$NON-NLS-1$
+            }
+        }
+    }
+
+    private void cleanFKForDropTables(Set<String> tablesToDrop, Connection connection) {
+        String fkSQL = "SELECT tc.table_name, tc.constraint_name FROM information_schema.table_constraints AS tc WHERE tc.constraint_name LIKE 'fk_%'";
+        Map<String, String> fkMap = new HashMap<>();
+        PreparedStatement fkStatement = null;
+        try {
+            fkStatement = connection.prepareStatement(fkSQL);
+            ResultSet rs = fkStatement.executeQuery();
+            while (rs.next()) {
+                // key: table_name, value: constraint_name
+                fkMap.put(rs.getString(1), rs.getString(2));
+            }
+        } catch (SQLException e1) {
+            throw new RuntimeException("Could not acquire connection to database.", e1); //$NON-NLS-1$
+        } finally {
+            try {
+                if (fkStatement != null) {
+                    fkStatement.close();
+                }
+            } catch (SQLException e) {
+                LOGGER.error("Unexpected error when closing connection.", e); //$NON-NLS-1$
+            }
+        }
+        for (String table : tablesToDrop) {
+            if (!fkMap.containsKey(table.toLowerCase())) {
+                continue;
+            }
+            try (Statement statement = connection.createStatement()) {
+                statement.executeUpdate("ALTER TABLE " + table + " DROP CONSTRAINT " + fkMap.get(table.toLowerCase())); //$NON-NLS-1$
+            } catch (SQLException e) {
+                LOGGER.error("Could not delete foreign key constraint of table '" + table + "'", e); //$NON-NLS-1$ //$NON-NLS-2$
             }
         }
     }
